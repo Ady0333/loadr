@@ -26,5 +26,5 @@ npm run dev
 
 ## Use it
 
-Open http://localhost:5173, enter a target URL, and hit **Run Test**. Watch
+Open https://loadr-n280.onrender.com, enter a target URL, and hit **Run Test**. Watch
 latency and throughput stream live, then read the AI analysis when the run ends.
