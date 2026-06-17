@@ -1,5 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 
+// getWebSocketUrl derives the backend WebSocket URL from the current location.
+// Locally the Go backend runs on :8080 over plain ws; when deployed, connect to
+// the same host that served the page using secure wss.
+export function getWebSocketUrl() {
+  if (window.location.hostname === 'localhost') {
+    return 'ws://localhost:8080/ws'
+  }
+  return `wss://${window.location.host}/ws`
+}
+
 // useWebSocket connects to `url` on mount, parses incoming JSON messages, and
 // forwards them to `onMessage`. It auto-reconnects on unexpected close. The
 // handler is kept in a ref so updating it doesn't tear down the socket.

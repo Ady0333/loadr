@@ -1,7 +1,9 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -17,9 +19,12 @@ import (
 
 const (
 	defaultPort = "8080"
-	staticDir   = "../frontend/dist"
+	staticDir   = "frontend/dist"
 	allowOrigin = "http://localhost:5173"
 )
+
+//go:embed frontend/dist
+var embeddedFrontend embed.FS
 
 // runRequest is the JSON body accepted by POST /api/run. Duration is taken in
 // whole seconds so the API stays language-agnostic (Go's time.Duration
@@ -51,7 +56,15 @@ func main() {
 	mux.HandleFunc("/api/run", srv.handleRun)
 	mux.HandleFunc("/api/analyze", srv.handleAnalyze)
 	mux.HandleFunc("/ws", hub.ServeWS)
-	mux.Handle("/", http.FileServer(http.Dir(staticDir)))
+
+	// Serve the frontend bundled into the binary. fs.Sub strips the
+	// frontend/dist prefix so "/" maps to index.html; http.FileServer sets
+	// content types from file extensions.
+	dist, err := fs.Sub(embeddedFrontend, staticDir)
+	if err != nil {
+		log.Fatalf("embed frontend: %v", err)
+	}
+	mux.Handle("/", http.FileServer(http.FS(dist)))
 
 	port := os.Getenv("PORT")
 	if port == "" {

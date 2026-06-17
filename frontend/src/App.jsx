@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react'
-import { useWebSocket } from './hooks/useWebSocket'
+import { getWebSocketUrl, useWebSocket } from './hooks/useWebSocket'
 import ConfigPanel from './components/ConfigPanel'
 import LiveChart from './components/LiveChart'
 import AIReport from './components/AIReport'
 
-const WS_URL = 'ws://localhost:8080/ws'
+const WS_URL = getWebSocketUrl()
 
 export default function App() {
   const [testRunning, setTestRunning] = useState(false)
